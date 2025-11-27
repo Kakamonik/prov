@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>واتساب بريميوم Direct</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- 1. Core Variables & Reset --- */
+        :root {
+            --primary: #25D366;
+            --primary-glow: rgba(37, 211, 102, 0.5);
+            --dark-bg: #0a0a0a;
+            --card-bg: rgba(20, 20, 20, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
+            --text-muted: #888888;
+            --input-bg: rgba(255, 255, 255, 0.05);
+            --transition: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--dark-bg);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(37, 211, 102, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(37, 211, 102, 0.05) 0%, transparent 40%);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-main);
+        }
+
+        /* --- 2. Main Card Design --- */
+        .container {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+            perspective: 1000px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 40px 30px;
+            box-shadow: 
+                0 40px 80px -20px rgba(0, 0, 0, 0.8),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+            transform: translateY(0);
+            transition: transform 0.4s var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative Glow behind card */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 60%);
+            animation: rotateBg 20s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes rotateBg { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .content { position: relative; z-index: 2; }
+
+        /* --- 3. Header --- */
+        .header { text-align: center; margin-bottom: 35px; }
+        .logo-box {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #25D366, #075e54);
+            border-radius: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 32px;
+            box-shadow: 0 15px 30px -10px var(--primary-glow);
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+        h1 { font-size: 24px; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 5px; }
+        p { color: var(--text-muted); font-size: 14px; font-weight: 400; }
+
+        /* --- 4. Input Section (The Core) --- */
+        .input-wrapper {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        /* Country Code Selector */
+        .country-btn {
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 0 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.3s var(--transition);
+            min-width: 100px;
+            font-weight: 700;
+            font-size: 16px;
+            direction: ltr; /* Keep +964 LTR */
+        }
+        .country-btn:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255,255,255,0.2); }
+        .flag-icon { font-size: 20px; }
+        .arrow-icon { font-size: 10px; color: var(--text-muted); transition: 0.3s; }
+
+        /* Phone Number Input */
+        .phone-input-container {
+            flex: 1;
+            position: relative;
+        }
+        input[type="tel"] {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 18px 20px;
+            border-radius: 18px;
+            font-size: 18px;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+        input[type="tel"]:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 211, 102, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        input[type="tel"]::placeholder { color: rgba(255, 255, 255, 0.3); }
+
+        /* Main Action Button */
+        .btn-main {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 18px;
+            background: linear-gradient(90deg, #25D366, #1ebc57);
+            color: #000;
+            font-weight: 800;
+            font-size: 18px;
+            font-family: 'Tajawal', sans-serif;
+            cursor: pointer;
+            box-shadow: 0 10px 25px -5px var(--primary-glow);
+            transition: all 0.3s var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-main::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(255,255,255,0.2), transparent);
+            opacity: 0; transition: 0.3s;
+        }
+        .btn-main:hover { transform: translateY(-3px); box-shadow: 0 15px 35px -5px var(--primary-glow); }
+        .btn-main:hover::after { opacity: 1; }
+        .btn-main:active { transform: scale(0.98); }
+
+        /* --- 5. History Section --- */
+        .history-section {
+            margin-top: 35px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            padding-top: 20px;
+        }
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .clear-history {
+            cursor: pointer;
+            color: #ff4b4b;
+            transition: 0.2s;
+            padding: 5px;
+        }
+        .clear-history:hover { color: #ff6b6b; }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        /* Custom Scrollbar */
+        .history-list::-webkit-scrollbar { width: 4px; }
+        .history-list::-webkit-scrollbar-track { background: transparent; }
+        .history-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            animation: slideUp 0.3s ease forwards;
+        }
+        .history-item:hover { background: rgba(255,255,255,0.08); transform: translateX(-3px); }
+        .h-info { display: flex; flex-direction: column; }
+        .h-num { font-weight: 600; font-size: 15px; direction: ltr; color: #ddd; }
+        .h-time { font-size: 11px; color: #666; margin-top: 2px; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- 6. Modal (Country Selector) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: flex-end; /* Bottom sheet on mobile */
+        }
+        .modal-overlay.active { display: flex; animation: fadeIn 0.3s; }
+        
+        .modal-content {
+            background: #1a1a1a;
+            width: 100%;
+            max-width: 420px;
+            height: 80vh;
+            border-radius: 30px 30px 0 0;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+            animation: slideUpModal 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        @media (min-width: 450px) {
+            .modal-overlay { align-items: center; }
+            .modal-content { height: 600px; border-radius: 30px; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-title { font-size: 18px; font-weight: 700; }
+        .close-modal { background: rgba(255,255,255,0.1); border: none; width: 30px; height: 30px; border-radius: 50%; color: #fff; cursor: pointer; }
+
+        .search-box {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .search-input {
+            background: transparent; border: none; color: white; width: 100%; font-family: 'Tajawal'; font-size: 16px;
+        }
+
+        .countries-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .country-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .country-option:hover { background: rgba(255,255,255,0.05); }
+        .c-flag { font-size: 24px; margin-left: 15px; }
+        .c-name { flex: 1; font-size: 15px; font-weight: 500; }
+        .c-code { color: var(--text-muted); direction: ltr; font-weight: 600; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUpModal { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="card">
+            <div class="content">
+                <!-- Header -->
+                <div class="header">
+                    <div class="logo-box">
+                        <i class="fab fa-whatsapp" style="color: #fff;"></i>
+                    </div>
+                    <h1>واتساب مباشر</h1>
+                    <p>ابدأ محادثة دون حفظ الرقم</p>
+                </div>
+
+                <!-- Input Area -->
+                <div class="input-wrapper">
+                    <!-- Country Trigger -->
+                    <div class="country-btn" id="countryTrigger" onclick="openModal()">
+                        <span class="flag-icon" id="currentFlag">🇮🇶</span>
+                        <span id="currentCode">+964</span>
+                        <i class="fas fa-chevron-down arrow-icon"></i>
+                    </div>
+                    
+                    <!-- Phone Input -->
+                    <div class="phone-input-container">
+                        <input type="tel" id="phoneInput" placeholder="رقم الهاتف" autocomplete="off">
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <button class="btn-main" onclick="openWhatsApp()">
+                    <span>بدء المحادثة</span>
+                    <i class="fas fa-arrow-left" style="transform: rotate(45deg);"></i>
+                </button>
+
+                <!-- History -->
+                <div class="history-section">
+                    <div class="history-header">
+                        <span>سجل البحث</span>
+                        <span class="clear-history" onclick="clearHistory()">مسح الكل</span>
+                    </div>
+                    <div class="history-list" id="historyList">
+                        <!-- Loaded via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Country Selector Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">اختر الدولة</span>
+                <button class="close-modal" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="search-box">
+                <i class="fas fa-search" style="color:#666"></i>
+                <input type="text" class="search-input" id="countrySearch" placeholder="ابحث عن دولة..." onkeyup="filterCountries()">
+            </div>
+            <div class="countries-list" id="countriesList">
+                <!-- Countries loaded via JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Data: Countries List (Optimized) ---
+        const countries = [
+            { code: "+964", name: "العراق", flag: "🇮🇶" },
+            { code: "+966", name: "السعودية", flag: "🇸🇦" },
+            { code: "+20", name: "مصر", flag: "🇪🇬" },
+            { code: "+971", name: "الإمارات", flag: "🇦🇪" },
+            { code: "+965", name: "الكويت", flag: "🇰🇼" },
+            { code: "+974", name: "قطر", flag: "🇶🇦" },
+            { code: "+968", name: "عمان", flag: "🇴🇲" },
+            { code: "+973", name: "البحرين", flag: "🇧🇭" },
+            { code: "+962", name: "الأردن", flag: "🇯🇴" },
+            { code: "+961", name: "لبنان", flag: "🇱🇧" },
+            { code: "+963", name: "سوريا", flag: "🇸🇾" },
+            { code: "+967", name: "اليمن", flag: "🇾🇪" },
+            { code: "+212", name: "المغرب", flag: "🇲🇦" },
+            { code: "+213", name: "الجزائر", flag: "🇩🇿" },
+            { code: "+216", name: "تونس", flag: "🇹🇳" },
+            { code: "+218", name: "ليبيا", flag: "🇱🇾" },
+            { code: "+249", name: "السودان", flag: "🇸🇩" },
+            { code: "+970", name: "فلسطين", flag: "🇵🇸" },
+            { code: "+90", name: "تركيا", flag: "🇹🇷" },
+            { code: "+1", name: "أمريكا/كندا", flag: "🇺🇸" },
+            { code: "+44", name: "بريطانيا", flag: "🇬🇧" },
+            { code: "+49", name: "ألمانيا", flag: "🇩🇪" },
+            { code: "+33", name: "فرنسا", flag: "🇫🇷" },
+            { code: "+91", name: "الهند", flag: "🇮🇳" },
+        ];
+
+        // --- State Management ---
+        let selectedCountry = countries[0]; // Default Iraq
+        const STORAGE_KEY = 'wa_premium_history';
+        let historyData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderHistory();
+            populateCountriesList();
+        });
+
+        // --- Country Modal Logic ---
+        function openModal() {
+            document.getElementById('modalOverlay').classList.add('active');
+            document.getElementById('countrySearch').focus();
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+        }
+
+        // Close modal on click outside
+        document.getElementById('modalOverlay').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('modalOverlay')) closeModal();
+        });
+
+        function populateCountriesList(filter = "") {
+            const listContainer = document.getElementById('countriesList');
+            listContainer.innerHTML = '';
+
+            const filtered = countries.filter(c => 
+                c.name.includes(filter) || c.code.includes(filter)
+            );
+
+            filtered.forEach(country => {
+                const div = document.createElement('div');
+                div.className = 'country-option';
+                div.innerHTML = `
+                    <span class="c-flag">${country.flag}</span>
+                    <span class="c-name">${country.name}</span>
+                    <span class="c-code">${country.code}</span>
+                `;
+                div.onclick = () => selectCountry(country);
+                listContainer.appendChild(div);
+            });
+        }
+
+        function filterCountries() {
+            const query = document.getElementById('countrySearch').value;
+            populateCountriesList(query);
+        }
+
+        function selectCountry(country) {
+            selectedCountry = country;
+            document.getElementById('currentFlag').textContent = country.flag;
+            document.getElementById('currentCode').textContent = country.code;
+            closeModal();
+        }
+
+        // --- Main Logic (Open WhatsApp) ---
+        function openWhatsApp() {
+            const input = document.getElementById('phoneInput');
+            let phone = input.value.trim();
+
+            if (!phone) {
+                input.focus();
+                input.style.borderColor = '#ff4b4b';
+                setTimeout(() => input.style.borderColor = 'rgba(255,255,255,0.08)', 1000);
+                return;
+            }
+
+            // Logic to remove leading zero if user enters "077..."
+            if (phone.startsWith('0')) {
+                phone = phone.substring(1);
+            }
+
+            // Remove non-numeric
+            phone = phone.replace(/[^0-9]/g, '');
+            
+            const fullNumber = selectedCountry.code.replace('+', '') + phone;
+            
+            addToHistory(fullNumber, selectedCountry);
+            
+            // Open link
+            window.open(`https://wa.me/${fullNumber}`, '_blank');
+        }
+
+        // --- History System ---
+        function addToHistory(number, countryInfo) {
+            // Avoid duplicates at the top
+            const exists = historyData.find(h => h.num === number);
+            if (exists) {
+                // Move to top
+                historyData = historyData.filter(h => h.num !== number);
+            }
+            
+            const newItem = {
+                num: number,
+                flag: countryInfo.flag,
+                code: countryInfo.code,
+                time: new Date().toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })
+            };
+
+            historyData.unshift(newItem);
+            if (historyData.length > 10) historyData.pop(); // Keep last 10
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(historyData));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('historyList');
+            list.innerHTML = '';
+
+            if (historyData.length === 0) {
+                list.innerHTML = '<div style="text-align:center; padding:20px; color:#555;">لا يوجد سجل</div>';
+                return;
+            }
+
+            historyData.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `
+                    <div class="h-info">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span>${item.flag}</span>
+                            <span class="h-num">+${item.num}</span>
+                        </div>
+                        <span class="h-time">${item.time}</span>
+                    </div>
+                    <i class="fas fa-chevron-left" style="font-size:10px; color:#555;"></i>
+                `;
+                div.onclick = () => window.open(`https://wa.me/${item.num}`, '_blank');
+                list.appendChild(div);
+            });
+        }
+
+        function clearHistory() {
+            historyData = [];
+            localStorage.removeItem(STORAGE_KEY);
+            renderHistory();
+        }
+
+        // Enter key support
+        document.getElementById('phoneInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') openWhatsApp();
+        });
+
+    </script>
+</body>
+</html>
